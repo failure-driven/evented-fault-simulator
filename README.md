@@ -1,10 +1,17 @@
 # Evented fault simulator
 
+[![
+  Ruby
+](https://github.com/failure-driven/evented-fault-simulator/actions/workflows/main.yml/badge.svg)
+](https://github.com/failure-driven/evented-fault-simulator/actions/workflows/main.yml)
+
 ## TL;DR
 
 ```sh
 make
 make install
+
+make test
 
 make demo
 
