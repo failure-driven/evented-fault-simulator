@@ -18,12 +18,32 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Set up Ruby
-      working-directory: ./simple-telemetry
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
+
     - name: Run the default task
       working-directory: ./simple-telemetry
-      run: bundle exec rake
+      run: bundle && bundle exec rake
+
+  e2e-tests:
+    name: E2E
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+          bundler-cache: true
+
+      - name: build
+        working-directory: ./e2e-tests
+        run: |
+          bundle
+          bundle exec rspec

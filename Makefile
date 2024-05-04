@@ -16,10 +16,12 @@ NC      = \033[0m
 install:
 	brew bundle
 	pushd simple-telemetry && bundle && popd
+	pushd e2e-tests && bundle && popd
 
 .PHONY: test
 test:
 	pushd simple-telemetry && bundle exec rake && popd
+	pushd e2e-tests && bundle exec rspec && popd
 		
 .PHONY: demo
 demo:
