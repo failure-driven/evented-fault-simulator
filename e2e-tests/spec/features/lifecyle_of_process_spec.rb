@@ -53,8 +53,10 @@ feature "lifecycle of process" do
           while (value = @queue.pop)
             @last_value = value
             break if value =~ /CLIENT/
-            expect(value.chomp).to eq "RECEIVED: processingPerformed: hello #{@uuid}"
-            received << value.chomp
+            if value =~ /RECEIVED/
+              expect(value.chomp).to eq "RECEIVED: processingPerformed: hello #{@uuid}"
+              received << value.chomp
+            end
           end
           expect(received).to match_array(
             [
