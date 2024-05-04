@@ -2,18 +2,33 @@
 
 require 'socket'
 
-server = nil
-begin
-  server = TCPSocket.open(
-    ENV.fetch("SIMPLE_TELEMETRY_HOST"),
-    ENV.fetch("SIMPLE_TELEMETRY_PORT")
-  )
-  server.puts "CLIENT: processStarted"
-  3.times do
-    server.puts "processingPerformed: " + "hello #{ARGV.join(" ")}"
-    sleep 1
+module Simple
+  class Telemetry
+    def initialize
+      @server = TCPSocket.open(
+        ENV.fetch("SIMPLE_TELEMETRY_HOST"),
+        ENV.fetch("SIMPLE_TELEMETRY_PORT")
+      )
+      @server.puts "CLIENT: processStarted"
+      at_exit { self.stop }
+    end
+
+    # TODO: overwrite certain methods to attach telemetry
+    def puts(*args)
+      @server.puts("processingPerformed: #{args.join(" ")}")
+    end
+
+    def stop
+      @server.puts "CLIENT: stopping"
+      @server.close
+    end
   end
-  server.puts "CLIENT: stopping"
-ensure
-  server.close
+end
+
+# initialize
+simple_telemetry = Simple::Telemetry.new
+
+3.times do
+  simple_telemetry.puts "hello #{ARGV.join(" ")}"
+  sleep 1
 end
