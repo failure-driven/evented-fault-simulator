@@ -2,15 +2,16 @@
 
 module Support
   class ProcessRunner
-    def initialize(command)
+    def initialize(env_vars: {}, command: )
+      @env_vars = env_vars
       @command = command
     end
 
     def run(queue:)
       process = IO.popen(
         [
-          {},
-          @command,
+          @env_vars,
+          *@command,
           {err: %i[child out]},
         ],
       )
@@ -23,9 +24,14 @@ module Support
         queue << "CMD: END"
       end
 
-      yield
+      if block_given?
+        yield
+      else
+        Process.wait(process.pid)
+      end
     ensure
-      Process.kill("TERM", process.pid)
+      process.close
+      # Process.kill("TERM", process.pid)
       # TODO: is a wait needed to make sure process is dead?
     end
   end
