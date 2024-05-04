@@ -15,7 +15,12 @@ NC      = \033[0m
 .PHONY: install
 install:
 	brew bundle
+	pushd simple-telemetry && bundle && popd
 
+.PHONY: test
+test:
+	pushd simple-telemetry && bundle exec rake && popd
+		
 .PHONY: demo
 demo:
 	@echo "demo goes here"
@@ -36,6 +41,7 @@ usage:
 	@echo "${YELLOW}make${NC}                     this handy usage guide"
 	@echo
 	@echo "${YELLOW}make install${NC}             install"
+	@echo "${YELLOW}make test${NC}                run tests"
 	@echo "${YELLOW}make demo${NC}                run the demo"
 	@echo "${YELLOW}make clean${NC}               clean up"
 	@echo
