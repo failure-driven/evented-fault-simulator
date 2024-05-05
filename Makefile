@@ -17,6 +17,7 @@ install:
 	brew bundle
 	pushd simple-telemetry && bundle && popd
 	pushd e2e-tests && bundle && popd
+	pushd simulator-frontend && npm install && popd
 
 .PHONY: test
 test:
@@ -57,6 +58,12 @@ launch-server:
 		SIMPLE_TELEMETRY_PORT=1234 \
 	        SIMPLE_TELEMETRY_WEB_PORT=9292 \
 		e2e-tests/bin/simple-telemetry-server.rb
+
+.PHONY:launch-simulator
+launch-simulator:
+	@echo "experimenetal 🧪 simulator frontend 🔫"
+	pushd simulator-frontend && npm start && popd
+
 .PHONY:clean
 clean: tmux-down
 
@@ -82,4 +89,5 @@ usage:
 	@echo "${GREEN}🔬 experimental 🔫${NC}"
 	@echo
 	@echo "${YELLOW}make launch-server${NC}       launch telemetry server with web enabled"
+	@echo "${YELLOW}make launch-simulator${NC}    launch simulator frontend"
 	@echo
