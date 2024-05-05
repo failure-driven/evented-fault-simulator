@@ -12,6 +12,7 @@ feature "lifecycle of process" do
       env_vars: {
         "SIMPLE_TELEMETRY_HOST" => "localhost",
         "SIMPLE_TELEMETRY_PORT" => "1234",
+        "SIMPLE_TELEMETRY_SINGLE_THREADED" => "true"
       },
       command: [
         File.join(File.dirname(__FILE__), "../../bin/simple-telemetry-server.rb")
