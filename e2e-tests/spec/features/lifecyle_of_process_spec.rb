@@ -46,7 +46,7 @@ feature "lifecycle of process" do
           while (value = @queue.pop)
             break if value =~ /CLIENT/
           end
-          expect(value.chomp).to eq "RECEIVED: CLIENT: processStarted"
+          expect(value.chomp).to match /RECEIVED: CLIENT\(\d+\): processStarted/
         end
 
         Then "telemetry client receives 3x ProcessingPerformed messages" do
@@ -55,21 +55,21 @@ feature "lifecycle of process" do
             @last_value = value
             break if value =~ /CLIENT/
             if value =~ /RECEIVED/
-              expect(value.chomp).to eq "RECEIVED: processingPerformed: hello #{@uuid}"
+              expect(value.chomp).to match /RECEIVED: processingPerformed\(\d+\): hello #{@uuid}/
               received << value.chomp
             end
           end
           expect(received).to match_array(
             [
-              "RECEIVED: processingPerformed: hello #{@uuid}",
-              "RECEIVED: processingPerformed: hello #{@uuid}",
-              "RECEIVED: processingPerformed: hello #{@uuid}"
+              /RECEIVED: processingPerformed\(\d+\): hello #{@uuid}/,
+              /RECEIVED: processingPerformed\(\d+\): hello #{@uuid}/,
+              /RECEIVED: processingPerformed\(\d+\): hello #{@uuid}/
             ]
           )
         end
 
         And "telemetry client receives ProcessTerminated message" do
-          expect(@last_value.chomp).to eq "RECEIVED: CLIENT: stopping"
+          expect(@last_value.chomp).to match /RECEIVED: CLIENT\(\d+\): stopping/
         end
 
         When "simple telemetry client stops" do

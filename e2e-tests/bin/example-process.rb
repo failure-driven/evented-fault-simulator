@@ -9,17 +9,17 @@ module Simple
         ENV.fetch("SIMPLE_TELEMETRY_HOST"),
         ENV.fetch("SIMPLE_TELEMETRY_PORT")
       )
-      @server.puts "CLIENT: processStarted"
+      @server.puts "CLIENT(#{Process.pid}): processStarted"
       at_exit { self.stop }
     end
 
     # TODO: overwrite certain methods to attach telemetry
     def puts(*args)
-      @server.puts("processingPerformed: #{args.join(" ")}")
+      @server.puts("processingPerformed(#{Process.pid}): #{args.join(" ")}")
     end
 
     def stop
-      @server.puts "CLIENT: stopping"
+      @server.puts "CLIENT(#{Process.pid}): stopping"
       @server.close
     end
   end

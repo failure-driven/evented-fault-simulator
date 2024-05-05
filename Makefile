@@ -43,6 +43,7 @@ demo: demo-tmux
 	tmux -L "evented-sim" send-keys -t "0:1" "${ENV_VARS} ./e2e-tests/bin/simple-telemetry-server.rb" Enter
 	tmux -L "evented-sim" split-window -t "0:1" -h
 	tmux -L "evented-sim" send-keys -t "0:1" "repeat 3 { ${ENV_VARS} ./e2e-tests/bin/example-process.rb `uuidgen` & }" Enter
+	tmux -L "evented-sim" send-keys -t "0:1" "sleep 10 && tmux -L "evented-sim" send-keys -t "0:1".0 C-c" Enter
 	tmux -L "evented-sim" -CC attach-session
 
 .PHONY:clean
