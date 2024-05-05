@@ -1,34 +1,16 @@
 #!/usr/bin/env ruby
 
-require 'socket'
+# frozen_string_literal: true
 
-module Simple
-  class Telemetry
-    def initialize
-      @server = TCPSocket.open(
-        ENV.fetch("SIMPLE_TELEMETRY_HOST"),
-        ENV.fetch("SIMPLE_TELEMETRY_PORT")
-      )
-      @server.puts "CLIENT(#{Process.pid}): processStarted"
-      at_exit { self.stop }
-    end
+$LOAD_PATH << File.join(File.dirname(__FILE__), "../../simple-telemetry/lib")
 
-    # TODO: overwrite certain methods to attach telemetry
-    def puts(*args)
-      @server.puts("processingPerformed(#{Process.pid}): #{args.join(" ")}")
-    end
-
-    def stop
-      @server.puts "CLIENT(#{Process.pid}): stopping"
-      @server.close
-    end
-  end
-end
+require "simple/telemetry/client"
 
 # initialize
-simple_telemetry = Simple::Telemetry.new
+simple_telemetry = Simple::Telemetry::Client.new
 
 3.times do
+  # TODO: overwrite the methods that should hook into telemetry
   simple_telemetry.puts "hello #{ARGV.join(" ")}"
   sleep 1
 end
