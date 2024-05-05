@@ -18,6 +18,16 @@ make demo
 make clean
 ```
 
+**🧪 experimental**
+
+```sh
+make launch-server
+
+open http://0.0.0.0:9292/
+
+# NOTE: will need to kill server manually finding it via the puma job
+```
+
 ## Evented simulator
 
 Imagine a system where you have
@@ -69,4 +79,6 @@ https://github.com/open-telemetry/opentelemetry-demo
   websockets?
     - [ ] https://github.com/socketry/async-websocket
     - [ ] server https://github.com/socketry/falcon
+    - have server running using rack, but need to refresh to get a message,
+      time to switch that around to being a websocket message stream
 

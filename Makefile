@@ -46,6 +46,17 @@ demo: demo-tmux
 	tmux -L "evented-sim" send-keys -t "0:1" "sleep 10 && tmux -L "evented-sim" send-keys -t "0:1".0 C-c" Enter
 	tmux -L "evented-sim" -CC attach-session
 
+.PHONY:launch-server
+launch-server:
+	@echo "experimenetal 🧪 web server 🔫"
+	@echo "will need to find puma job to kill it"
+	@echo "\n\t${YELLOW}ps aux | grep puma${NC}"
+	@echo "\n\t${YELLOW}kill -9 <PID>${NC}\n"
+	SIMPLE_TELEMETRY_WEB_SERVER=1 \
+		SIMPLE_TELEMETRY_HOST=localhost \
+		SIMPLE_TELEMETRY_PORT=1234 \
+	        SIMPLE_TELEMETRY_WEB_PORT=9292 \
+		e2e-tests/bin/simple-telemetry-server.rb
 .PHONY:clean
 clean: tmux-down
 
@@ -67,4 +78,8 @@ usage:
 	@echo
 	@echo "${YELLOW}make tmux-reattach${NC}       reattach to tmux session"
 	@echo "${YELLOW}make tmux-down${NC}           kill tmux session (make clean)"
+	@echo
+	@echo "${GREEN}🔬 experimental 🔫${NC}"
+	@echo
+	@echo "${YELLOW}make launch-server${NC}       launch telemetry server with web enabled"
 	@echo
