@@ -61,3 +61,12 @@ flowchart LR
 The idea is to have simple telemetry system that takes telemetry data from each
 "service" and is displayed in a frontend visulaisation system.
 
+## Thoughts
+
+- [ ] This is probably already handled by something like
+https://github.com/open-telemetry/opentelemetry-demo
+- [ ] next up add a web server that serves the data as a stream over
+  websockets?
+    - [ ] https://github.com/socketry/async-websocket
+    - [ ] server https://github.com/socketry/falcon
+
