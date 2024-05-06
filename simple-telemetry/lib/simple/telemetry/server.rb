@@ -2,7 +2,7 @@
 
 require "socket"
 require "securerandom"
-require "JSON"
+require "json"
 if ENV.fetch("SIMPLE_TELEMETRY_WEB_SERVER", false)
   require "rack"
   require "rackup"

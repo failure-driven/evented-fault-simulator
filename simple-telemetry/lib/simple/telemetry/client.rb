@@ -2,7 +2,7 @@
 
 require "socket"
 require "securerandom"
-require "JSON"
+require "json"
 
 module Simple
   module Telemetry

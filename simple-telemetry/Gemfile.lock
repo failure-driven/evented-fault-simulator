@@ -74,6 +74,7 @@ PLATFORMS
   arm64-darwin-23
 
 DEPENDENCIES
+  json (~> 2.7)
   rack (~> 3.0)
   rackup (~> 2.1)
   rake (~> 13.0)
