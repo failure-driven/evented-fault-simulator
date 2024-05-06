@@ -16,6 +16,13 @@ import { MessageData } from './message-data';
         {{ process.traceId }}<br/>
         {{ process.pid }}
       </li>
+      <li>
+        <ul *ngFor="let event of events[process.traceId]">
+          <li>
+            {{ event }}
+          </li>
+        </ul>
+      </li>
     </ul>
     <code *ngFor="let datum of dataString">
      {{ datum }}
@@ -30,6 +37,7 @@ export class AppComponent {
   data: MessageData[] = [];
   dataString: String[] = [];
   processes: any[] = [];
+  events: any = {};
 
   constructor(private telemetryDataService: TelemetryDataService) {
     this.telemetryDataService.createEventSource().subscribe((message: MessageData) => {
@@ -42,6 +50,12 @@ export class AppComponent {
     if(message.event === 'processStarted') {
       const pid = message.attributes.filter((attr) => attr.key === "pid")[0]?.value?.value;
       this.processes.push({...message, pid});
+      this.events[message.traceId] = [];
+    }
+    if(message.event === 'processingPerformed') {
+      this.events[message.traceId].push(
+        message.attributes.map((attribute) => attribute?.value?.stringValue)
+      );
     }
     if(message.event === 'processStopped') {
       this.processes = this.processes.filter((process) => process.traceId !== message.traceId);

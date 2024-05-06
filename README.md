@@ -98,7 +98,7 @@ https://github.com/open-telemetry/opentelemetry-demo
 
 ## TODO
 
-- [ ] display events next to "clients"
+- [x] display events next to "clients"
 - [ ] change visual display from "logs" to "sprites"
 - [ ] a way to display many "client sprites" on a limited page
 - [ ] build a client into a rails/ruby `Faraday` process
