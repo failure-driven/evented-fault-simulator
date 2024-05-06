@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "socket"
+require "securerandom"
 if ENV.fetch("SIMPLE_TELEMETRY_WEB_SERVER", false)
   require "rack"
   require "rackup"
@@ -37,7 +38,31 @@ module Simple
 
       def start_web_server
         app = lambda do |env|
-          [200, {"Content-Type" => "text/plain"}, ["Hello World! #{Time.now} #{@queue.pop}"]]
+          body = proc do |stream|
+            while (data = @queue.pop)
+              stream.write format(
+                <<~EO_MESSAGE,
+                  id: %<id>s
+                  event: %<event>s
+                  data: %<data>s
+
+                EO_MESSAGE
+                id: SecureRandom.uuid,
+                event: "status",
+                data: data
+              )
+            end
+          end
+          [
+            200,
+            {
+              "Content-Type" => "text/event-stream",
+              "cache-control" => "no-cache",
+              "allow-origin" => "*",
+              "Access-Control-Allow-Origin" => "*"
+            },
+            body
+          ]
         end
         server = Rackup::Server.new(app: app, port: @port)
         @web_server = Thread.new { server.start }

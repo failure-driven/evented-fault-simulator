@@ -23,3 +23,6 @@ brew "docker-compose"       # Isolated development environments using Docker
 #
 brew "tmux"                 # Terminal multiplexer https://tmux.github.io/
 brew "jq"                   # UNIX tool for parsing and querying JSON
+brew "ossp-uuid"            # ISO-C API and CLI for generating UUIDs
+                            # http://www.ossp.org/pkg/lib/uuid/
+                            # using: uuidgen

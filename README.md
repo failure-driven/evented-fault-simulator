@@ -22,10 +22,20 @@ make clean
 
 ```sh
 make launch-server
-
-open http://0.0.0.0:9292/
+curl -N http://0.0.0.0:9292
 
 # NOTE: will need to kill server manually finding it via the puma job
+
+make launch-simulator
+http://localhost:4200/
+
+# will display 10 most recent events in the browser
+# fire up some events with
+repeat 10 {
+  SIMPLE_TELEMETRY_HOST=localhost \
+  SIMPLE_TELEMETRY_PORT=1234 \
+  ./e2e-tests/bin/example-process.rb \
+  `uuidgen` & }
 ```
 
 ## Evented simulator
