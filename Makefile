@@ -52,12 +52,19 @@ launch-server:
 	@echo "experimenetal 🧪 web server 🔫"
 	@echo "will need to find puma job to kill it"
 	@echo "\n\t${YELLOW}ps aux | grep puma${NC}"
+	@echo "\n\t${YELLOW}ps aux | grep simple-telemetry-server | \\\\ ${NC}"
+	@echo "\t  ${YELLOW}awk '{print "'$$2'"}' | xargs kill -9${NC}"
 	@echo "\n\t${YELLOW}kill -9 <PID>${NC}\n"
 	SIMPLE_TELEMETRY_WEB_SERVER=1 \
 		SIMPLE_TELEMETRY_HOST=localhost \
 		SIMPLE_TELEMETRY_PORT=1234 \
-	        SIMPLE_TELEMETRY_WEB_PORT=9292 \
+		SIMPLE_TELEMETRY_WEB_PORT=9292 \
 		e2e-tests/bin/simple-telemetry-server.rb
+
+.PHONY:kill-server
+kill-server:
+	ps aux | grep simple-telemetry-server | \
+	  awk '{print $$2}' | xargs kill -9
 
 .PHONY:launch-simulator
 launch-simulator:
@@ -89,5 +96,6 @@ usage:
 	@echo "${GREEN}🔬 experimental 🔫${NC}"
 	@echo
 	@echo "${YELLOW}make launch-server${NC}       launch telemetry server with web enabled"
+	@echo "${RED}make kill-server${NC}         kill server"
 	@echo "${YELLOW}make launch-simulator${NC}    launch simulator frontend"
 	@echo

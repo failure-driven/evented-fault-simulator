@@ -25,7 +25,8 @@ make launch-server
 curl -N http://0.0.0.0:9292 # old puma under ruby 3.2.2
 curl -N http://0.0.0.0:8080 # Webrick under ruby 3.3.1
 
-# NOTE: will need to kill server manually finding it via the puma job
+# NOTE: will need to kill server manually finding it via the puma/webrick job
+#       or make kill-server
 
 make launch-simulator
 http://localhost:4200/
@@ -37,6 +38,8 @@ repeat 10 {
   SIMPLE_TELEMETRY_PORT=1234 \
   ./e2e-tests/bin/example-process.rb \
   `uuidgen` & }
+
+make kill-server
 ```
 
 ## Evented simulator
@@ -120,10 +123,20 @@ https://github.com/open-telemetry/opentelemetry-demo
                       stream closed in another thread (IOError)
   	from /home.../spec/support/process_runner.rb:21:in `block in run'
   ```
-  - [ ] add a test timeout to kill the test after a short period of time
-  - [ ] has been turned off in GitHub Actions as it uses a `6 hour` job timeout
-    rather than a test timeout
-  - [ ] fix it
+    - [ ] add a test timeout to kill the test after a short period of time
+    - [ ] has been turned off in GitHub Actions as it uses a `6 hour` job timeout
+      rather than a test timeout
+    - [ ] fix it
+  - [ ] fix error around closing threads
+    ```
+    .../evented-fault-simulator/simple-telemetry/lib/simple/telemetry/server.rb:92:in
+        `kill': wrong argument type Simple::Telemetry::Server (expected VM/thread) (TypeError)
+
+                Thread.kill(self) if input_json.dig("event") == "processStopped"
+                            ^^^^
+	  from .../evented-fault-simulator/simple-telemetry/lib/simple/telemetry/server.rb:92:in
+        `block (2 levels) in mulit_threaded_runner'
+    ```
 
 ## DONE
 
