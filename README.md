@@ -93,3 +93,38 @@ https://github.com/open-telemetry/opentelemetry-demo
     - have server running using rack, but need to refresh to get a message,
       time to switch that around to being a websocket message stream
 
+## TODO
+
+- [ ] display events next to "clients"
+- [ ] change visual display from "logs" to "sprites"
+- [ ] a way to display many "client sprites" on a limited page
+- [ ] build a client into a rails/ruby `Faraday` process
+- [ ] build a client into a `sidekiq` process
+- [ ] build a client into a lambda client running on openstack
+- [ ] switch to using docker
+- [ ] extract JSON serialization into own class in `Simple::Telemetry`
+- [ ] errors in E2E spec
+  ```
+  lifecycle of process
+      Given simple telemetry client is running
+  #<Thread:0x00007f4dbb9f91c8 /home/...spec/support/process_runner.rb:19 run>
+                      terminated with exception (report_on_exception is true):
+  /home/...spec/support/process_runner.rb:21:in `gets':
+                      stream closed in another thread (IOError)
+  	from /home/...spec/support/process_runner.rb:21:in `block in run'
+      When sample process starts
+      Then telemetry client receives ProcessStarted message (FAILED)
+  #<Thread:0x00007f4dbb808a30 /home/...spec/support/process_runner.rb:19 run>
+                      terminated with exception (report_on_exception is true):
+  /home/...spec/support/process_runner.rb:21:in `gets':
+                      stream closed in another thread (IOError)
+  	from /home.../spec/support/process_runner.rb:21:in `block in run'
+  ```
+  - [ ] add a test timeout to kill the test after a short period of time
+  - [ ] has been turned off in GitHub Actions as it uses a `6 hour` job timeout
+    rather than a test timeout
+  - [ ] fix it
+
+## DONE
+
+...
