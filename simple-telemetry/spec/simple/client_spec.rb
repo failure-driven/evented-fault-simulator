@@ -22,18 +22,43 @@ RSpec.describe Simple::Telemetry::Client do
     it "writes to the socket it has started" do
       Simple::Telemetry::Client.new
 
-      expect(socket).to have_received(:puts).with(
-        "CLIENT(#{Process.pid}): processStarted"
-      )
+      # TODO: move json out to Simple::Telemetry::JsonSerailizer
+      #       or use a socket writer wrapper to assert HASH and not JSON
+      expect(socket).to have_received(:puts) do |message|
+        expect(JSON.parse(message)).to match(
+          hash_including(
+            "event" => "processStarted",
+            "name" => "Simple::Telemetry::Client",
+            "timeUnixNano" => kind_of(Integer),
+            "traceId" => kind_of(String),
+            "attributes" => [
+              {"key" => "pid", "value" => {"type" => "integer", "value" => Process.pid}}
+            ]
+          )
+        )
+      end
     end
 
     describe "#puts" do
       it "writes the message to the socket" do
         Simple::Telemetry::Client.new.puts("a message to puts")
 
-        expect(socket).to have_received(:puts).with(
-          "processingPerformed(#{Process.pid}): a message to puts"
-        )
+        # TODO: move json out to Simple::Telemetry::JsonSerailizer
+        #       or use a socket writer wrapper to assert HASH and not JSON
+        expect(socket).to have_received(:puts).with(/processStarted/)
+        expect(socket).to have_received(:puts).with(/processingPerformed/) do |message|
+          expect(JSON.parse(message)).to match(
+            hash_including(
+              "event" => "processingPerformed",
+              "name" => "Simple::Telemetry::Client",
+              "timeUnixNano" => kind_of(Integer),
+              "traceId" => kind_of(String),
+              "attributes" => [
+                {"key" => "args", "value" => {"stringValue" => "a message to puts"}}
+              ]
+            )
+          )
+        end
       end
     end
 
@@ -41,9 +66,23 @@ RSpec.describe Simple::Telemetry::Client do
       it "writes a message and stops the socket" do
         Simple::Telemetry::Client.new.stop
 
-        expect(socket).to have_received(:puts).with(
-          "CLIENT(#{Process.pid}): stopping"
-        )
+        # TODO: move json out to Simple::Telemetry::JsonSerailizer
+        #       or use a socket writer wrapper to assert HASH and not JSON
+        expect(socket).to have_received(:puts).with(/processStarted/)
+        expect(socket).to have_received(:puts).with(/processStopped/) do |message|
+          expect(JSON.parse(message)).to match(
+            hash_including(
+              "event" => "processStopped",
+              "name" => "Simple::Telemetry::Client",
+              "timeUnixNano" => kind_of(Integer),
+              "traceId" => kind_of(String),
+              "attributes" => [
+                {"key" => "pid", "value" => {"type" => "integer", "value" => Process.pid}},
+                {"key" => "totalRuntime", "value" => {"type" => "number", "unit" => "nanoseconds", "value" => kind_of(Integer)}}
+              ]
+            )
+          )
+        end
         expect(socket).to have_received(:close)
       end
     end

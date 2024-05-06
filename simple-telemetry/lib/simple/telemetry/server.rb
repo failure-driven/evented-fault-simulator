@@ -2,6 +2,7 @@
 
 require "socket"
 require "securerandom"
+require "JSON"
 if ENV.fetch("SIMPLE_TELEMETRY_WEB_SERVER", false)
   require "rack"
   require "rackup"
@@ -18,6 +19,8 @@ module Simple
         )
         @single_threaded = ENV.fetch("SIMPLE_TELEMETRY_SINGLE_THREADED", false)
         @port = ENV.fetch("SIMPLE_TELEMETRY_WEB_PORT", 9292)
+        @start_time_monotonic = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
+        @trace_id = SecureRandom.uuid
         @queue = Thread::Queue.new
       end
 
@@ -72,8 +75,9 @@ module Simple
         client = @server.accept
         while (input = client.gets)
           puts "RECEIVED: #{input}"
-          @queue << "RECEIVED: #{input}"
-          break if input == "CLIENT: stopping"
+          @queue << input
+          input_json = JSON.parse(input)
+          break if input_json.dig("event") == "processStopped"
         end
       end
 
@@ -82,8 +86,9 @@ module Simple
           Thread.start(@server.accept) do |client|
             while (input = client.gets)
               puts "RECEIVED: #{input}"
-              @queue << "RECEIVED: #{input}"
-              Thread.kill(self) if input == "CLIENT: stopping"
+              @queue << input
+              input_json = JSON.parse(input)
+              Thread.kill(self) if input_json.dig("event") == "processStopped"
             end
           end
         end.join
@@ -113,8 +118,35 @@ module Simple
       def healthcheck
         puts "SIMPLE TELEMETRY: healthcheck"
         puts "SIMPLE TELEMETRY: server #{@web_server.status}" if @web_server
-        @queue << "SIMPLE TELEMETRY: healthcheck"
-        @queue << "SIMPLE TELEMETRY: server #{@web_server.status}" if @web_server
+        # TODO: extract json messaes to Simple::Telemetry::JsonSerailizer
+        @queue << {
+          traceId: @trace_id,
+          name: self.class,
+          event: :serverHealthcheck,
+          timeUnixNano: Process.clock_gettime(Process::CLOCK_REALTIME, :nanosecond),
+          attributes: [
+            {
+              key: :status,
+              value: {
+                stringValue: :healthy
+              }
+            },
+            {
+              key: :upTime,
+              value: {
+                type: :number,
+                unit: :nanoseconds,
+                value: Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond) - @start_time_monotonic
+              }
+            },
+            {
+              key: :webServerStatus,
+              value: {
+                stringValue: @web_server && @web_server.status
+              }
+            }
+          ]
+        }.to_json
       end
 
       def setup_healthcheck
