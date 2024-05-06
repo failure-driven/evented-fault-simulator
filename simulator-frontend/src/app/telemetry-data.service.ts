@@ -12,7 +12,7 @@ export class TelemetryDataService {
 
   createEventSource(): Observable<MessageData> {
     // TODO: move out to env setup
-    const eventSource = new EventSource("http://0.0.0.0:9292/");
+    const eventSource = new EventSource("http://0.0.0.0:8080/");
 
     return new Observable(observer => {
       // NOTE: unnamed events

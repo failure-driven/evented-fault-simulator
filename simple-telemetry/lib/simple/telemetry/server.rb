@@ -67,6 +67,7 @@ module Simple
             body
           ]
         end
+        # TODO: port ignored by Webrick under ruby 3.3.1
         server = Rackup::Server.new(app: app, port: @port)
         @web_server = Thread.new { server.start }
       end

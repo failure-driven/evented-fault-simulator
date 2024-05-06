@@ -22,7 +22,8 @@ make clean
 
 ```sh
 make launch-server
-curl -N http://0.0.0.0:9292
+curl -N http://0.0.0.0:9292 # old puma under ruby 3.2.2
+curl -N http://0.0.0.0:8080 # Webrick under ruby 3.3.1
 
 # NOTE: will need to kill server manually finding it via the puma job
 
